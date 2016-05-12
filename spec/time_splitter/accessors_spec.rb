@@ -2,10 +2,10 @@ require 'active_support/all'
 require_relative "../../lib/time_splitter/accessors.rb"
 
 describe TimeSplitter::Accessors do
-  let(:model) { Model.new }
+  let(:model) { Model.new() }
   before do
     class ModelParent; attr_accessor :starts_at; end
-    class Model < ModelParent; attr_accessor :starts_at; end
+    class Model < ModelParent; attr_accessor :starts_at, :attributes; end
     Model.extend(TimeSplitter::Accessors)
     Model.split_accessor(:starts_at)
   end
@@ -30,6 +30,18 @@ describe TimeSplitter::Accessors do
           model.starts_at_date = '2222-5-6'
           expect(model.starts_at).to eq DateTime.new(2222, 5, 6, 4, 5, 0, '+7')
           expect(model.starts_at_date).to eq Date.new(2222, 5, 6)
+        end
+
+        it 'sets zero date if invalid date format' do
+          model.starts_at_date = 'invalid'
+          expect(model.starts_at).to eq DateTime.new(0, 1, 1, 0, 0, 0)
+          expect(model.starts_at_date).to eq Date.new(0, 1, 1)
+        end
+
+        it 'sets zero date if invalid time format' do
+          model.starts_at_time = 'invalid'
+          expect(model.starts_at).to eq DateTime.new(0, 1, 1, 0, 0, 0)
+          expect(model.starts_at_time).to eq Date.new(0, 1, 1)
         end
 
         it 'sets the hour on the new default' do
