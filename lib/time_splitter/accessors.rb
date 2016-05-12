@@ -1,8 +1,10 @@
 module TimeSplitter
-  module Accessors
 
-    INVALID_FROMAT = :invalid_format
-    ZERO_DATE_TIME = DateTime.new(0, 1, 1, 0, 0, 0, '+00:00')
+  INVALID_FORMAT = :invalid_format
+  ZERO_DATE_TIME = DateTime.new(0, 1, 1, 0, 0, 0, '+00:00')
+  INVALID_FORMAT_REGEX = /\A0000-01-01 00:00:00 UTC\Z/
+
+  module Accessors
 
     def split_accessor(*attrs)
       options = attrs.extract_options!
@@ -23,7 +25,7 @@ module TimeSplitter
 
         define_method("#{attr}_date=") do |date|
           return unless date.present?
-          return if send("#{attr}_date") == INVALID_FROMAT # skip setting date if invalid time
+          return if send("#{attr}_date") == INVALID_FORMAT # skip setting date if invalid time
 
           unless date.is_a?(Date) || date.is_a?(Time)
             begin
@@ -33,7 +35,7 @@ module TimeSplitter
                 date = Date.parse(date.to_s)
               end
             rescue
-              attributes["#{attr}_time"] = INVALID_FROMAT # set this, to prevent overriding invalid date by valid time
+              attributes["#{attr}_time"] = INVALID_FORMAT # set this, to prevent overriding invalid date by valid time
               send("#{attr}=", ZERO_DATE_TIME) # set zero date to allow validation in e.g. Rails
               return
             end
@@ -53,7 +55,7 @@ module TimeSplitter
 
         define_method("#{attr}_time=") do |time|
           return unless time.present?
-          return if send("#{attr}_time") == INVALID_FROMAT # skip setting time if invalid date
+          return if send("#{attr}_time") == INVALID_FORMAT # skip setting time if invalid date
 
           unless time.is_a?(Date) || time.is_a?(Time)
             begin
@@ -63,7 +65,7 @@ module TimeSplitter
                 time = Time.parse(time)
               end
             rescue
-              attributes["#{attr}_date"] = INVALID_FROMAT # set this, to prevent overriding invalid time by valid date
+              attributes["#{attr}_date"] = INVALID_FORMAT # set this, to prevent overriding invalid time by valid date
               send("#{attr}=", ZERO_DATE_TIME) # set zero date to allow validation in e.g. Rails
               return
             end
