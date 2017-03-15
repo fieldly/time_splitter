@@ -24,7 +24,7 @@ module TimeSplitter
         # Writers
 
         define_method("#{attr}_date=") do |date|
-          return unless date.present?
+          return self.send("#{attr}=", nil) unless date.present?
           return if send("#{attr}_date") == INVALID_FORMAT # skip setting date if invalid time
 
           unless date.is_a?(Date) || date.is_a?(Time)
@@ -54,7 +54,7 @@ module TimeSplitter
         end
 
         define_method("#{attr}_time=") do |time|
-          return unless time.present?
+          return self.send("#{attr}=", nil) unless time.present?
           return if send("#{attr}_time") == INVALID_FORMAT # skip setting time if invalid date
 
           unless time.is_a?(Date) || time.is_a?(Time)
