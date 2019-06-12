@@ -2,7 +2,7 @@ module TimeSplitter
 
   INVALID_FORMAT = :invalid_format
   ZERO_DATE_TIME = DateTime.new(0, 1, 1, 0, 0, 0, '+00:00')
-  INVALID_FORMAT_REGEX = /\A0000-01-01 00:00:00 UTC\Z/
+  INVALID_FORMAT_REGEX = /\A0000-01-01 \d\d:\d\d:\d\d .*\Z/
 
   module Accessors
 
